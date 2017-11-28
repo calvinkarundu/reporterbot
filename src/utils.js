@@ -3,6 +3,7 @@ import config from 'config';
 import bunyan from 'bunyan';
 import bunyanRequestLogger from 'bunyan-request-logger';
 import morgan from 'morgan';
+import mkdirp from 'mkdirp';
 import tracer from 'tracer';
 
 export const ERROR_START = 15;
@@ -62,3 +63,16 @@ export function normalizePort(val) {
 export const delay = time => new Promise((resolve) => {
   setTimeout(() => { resolve(); }, time);
 });
+
+
+export const getReportFilesDir = () => {
+  let reportFilesDir;
+  try {
+    reportFilesDir = path.join(__dirname, `../${config.get('reportFilesDir')}`);
+    mkdirp.sync(reportFilesDir);
+    return reportFilesDir;
+  } catch (ex) {
+    log.error(ex);
+    return reportFilesDir;
+  }
+};
