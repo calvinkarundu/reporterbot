@@ -1,14 +1,16 @@
 import fs from 'fs';
 import path from 'path';
-import getUserActivity from './getUserActivity';
 
-import { log, delay } from '../../utils';
+import { log, delay, getReportFilesDir } from '../../utils';
 import { postChatMessage, uploadFile } from '../slack';
+
+// Reports
+import getUserActivity from './getUserActivity';
 
 const REPORTS_CONFIG = {
   userActivity: {
     name: 'User Activity',
-    namePrfix: 'userActivity',
+    namePrefix: 'userActivity',
     type: 'csv',
     func: getUserActivity,
   },
@@ -38,24 +40,24 @@ const checkIfReportExists = async (reportPath) => {
 };
 
 const generateReportImpl = async (options, { slackReqObj }) => {
-  let reportName;
-  try {
-    const {
-      reportKey,
-      reportFactoryFunc,
-      reportTmpName,
-    } = options;
+  const {
+    reportName,
+    reportTmpName,
+    reportType,
+    reportFactoryFunc,
+  } = options;
 
+  try {
     await reportFactoryFunc();
-    const reportPath = path.join(__dirname, '../../../../data/', reportTmpName);
-    reportName = REPORTS_CONFIG[reportKey].name;
+    const reportFilesDir = getReportFilesDir();
+    const reportFilePath = path.join(reportFilesDir, reportTmpName);
 
     /*
       FIX ME::
       Delay hack to ensure previous fs call is done processing file
     */
     await delay(250);
-    const reportExists = await checkIfReportExists(reportPath);
+    const reportExists = await checkIfReportExists(reportFilePath);
 
     if (reportExists === false) {
       const message = {
@@ -76,7 +78,12 @@ const generateReportImpl = async (options, { slackReqObj }) => {
       Delay hack to ensure previous fs call is done processing file
     */
     await delay(500);
-    const uploadedReport = await uploadFile({ reportPath, reportName, reportTmpName });
+    const uploadedReport = await uploadFile({
+      filePath: reportFilePath,
+      fileTmpName: reportTmpName,
+      fileName: reportName,
+      fileType: reportType,
+    });
     const message = {
       responseUrl: slackReqObj.response_url,
       replaceOriginal: false,
@@ -125,11 +132,19 @@ export const generateReport = async (options) => {
     }
 
     if (reportKey === 'userActivity') {
-      const reportName = `${report.namePrefix}_${Date.now()}.${report.type}`;
+      const reportName = report.name;
+      const reportTmpName = `${report.namePrefix}_${Date.now()}.${report.type}`;
+      const reportType = report.type;
+
       const reportParams = {
-        reportKey,
         reportName,
-        reportFactoryFunc() { return report.func(); },
+        reportTmpName,
+        reportType,
+        reportFactoryFunc() {
+          return report.func({
+            reportTmpName,
+          });
+        },
       };
 
       // Fire of report generation
