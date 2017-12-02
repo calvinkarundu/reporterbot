@@ -126,7 +126,6 @@ Temporary Items
 .apdisk
 
 config/development.json
-config/default.json
 
 # Ignore build folders
 dist
