@@ -32,7 +32,8 @@ export const postChatMessage = message => new Promise((resolve, reject) => {
     } else if (response.statusCode !== 200) {
       reject(body);
     } else if (body.ok !== true) {
-      reject(new Error(`Got non ok response while posting chat message body ${JSON.stringify(body, 0, 4)}`));
+      const bodyString = JSON.stringify(body);
+      reject(new Error(`Got non ok response while posting chat message body ${bodyString}`));
     } else {
       resolve(body);
     }
@@ -66,7 +67,8 @@ export const uploadFile = options => new Promise((resolve, reject) => {
     } else if (response.statusCode !== 200) {
       reject(body);
     } else if (body.ok !== true) {
-      reject(new Error(`Got non ok response while uploading file ${fileTmpName} body ${JSON.stringify(body, 0, 4)}`));
+      const bodyString = JSON.stringify(body);
+      reject(new Error(`Got non ok response while uploading file ${fileTmpName} body ${bodyString}`));
     } else {
       resolve(body);
     }

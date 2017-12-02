@@ -1,17 +1,11 @@
 import bodyParser from 'body-parser';
-import { log } from './utils';
 
+import { log } from './utils';
 import routes from './routes';
 
 export default function (app) {
-  if (process.env.NODE_ENV !== 'test') {
-    app.use(log.requestLogger);
-  }
-
   app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({
-    extended: true,
-  }));
+  app.use(bodyParser.urlencoded({ extended: true }));
 
   // Routes
   app.use(routes);

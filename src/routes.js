@@ -1,6 +1,6 @@
 import express from 'express';
-import { log } from './utils';
 
+import { log } from './utils';
 import { reportsList, generateReport } from './modules/reports';
 
 const router = new express.Router();
