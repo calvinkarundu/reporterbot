@@ -1,10 +1,9 @@
+import fs from 'fs';
 import path from 'path';
 import config from 'config';
 import morgan from 'morgan';
 import mkdirp from 'mkdirp';
 import tracer from 'tracer';
-
-export const ERROR_START = 15;
 
 export const log = (() => {
   const logger = tracer.colorConsole();
@@ -22,6 +21,20 @@ export const normalizePort = (val) => {
 export const delay = time => new Promise((resolve) => {
   setTimeout(() => { resolve(); }, time);
 });
+
+export const fileExists = async (filePath) => {
+  let exists = true;
+  try {
+    fs.accessSync(filePath);
+  } catch (ex) {
+    if (ex.code === 'ENOENT') {
+      exists = false;
+    } else {
+      log.error(ex);
+    }
+  }
+  return exists;
+};
 
 export const getReportFilesDir = () => {
   let reportFilesDir;

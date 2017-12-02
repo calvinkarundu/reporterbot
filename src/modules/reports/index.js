@@ -1,7 +1,6 @@
-import fs from 'fs';
 import path from 'path';
 
-import { log, delay, getReportFilesDir } from '../../utils';
+import { log, delay, fileExists, getReportFilesDir } from '../../utils';
 import { postChatMessage, uploadFile } from '../slack';
 
 // Reports
@@ -17,27 +16,13 @@ const REPORTS_CONFIG = {
 };
 
 export const reportsList = Object.entries(REPORTS_CONFIG)
-  .map(([key, value]) => { // eslint-disable-line
-    return {
+  .map(([key, value]) => {
+    const report = {
       text: value.name,
       value: key,
     };
+    return report;
   });
-
-const checkIfReportExists = async (reportPath) => {
-  let reportExists = true;
-  try {
-    fs.accessSync(reportPath);
-  } catch (ex) {
-    if (ex.code === 'ENOENT') {
-      reportExists = false;
-    } else {
-      log.error(ex);
-    }
-  }
-
-  return reportExists;
-};
 
 const generateReportImpl = async (options, { slackReqObj }) => {
   const {
@@ -57,7 +42,7 @@ const generateReportImpl = async (options, { slackReqObj }) => {
       Delay hack to ensure previous fs call is done processing file
     */
     await delay(250);
-    const reportExists = await checkIfReportExists(reportFilePath);
+    const reportExists = await fileExists(reportFilePath);
 
     if (reportExists === false) {
       const message = {

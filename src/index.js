@@ -5,7 +5,7 @@ import express from 'express';
 import http from 'http';
 
 import bootstrap from './bootstrap';
-import { log, normalizePort, ERROR_START } from './utils';
+import { log, normalizePort } from './utils';
 
 const app = express();
 
@@ -19,7 +19,7 @@ app.start = async () => {
   server.on('error', (error) => {
     if (error.syscall !== 'listen') throw error;
     log.error(`Failed to start server: ${error}`);
-    process.exit(ERROR_START);
+    process.exit(1);
   });
 
   server.on('listening', () => {
