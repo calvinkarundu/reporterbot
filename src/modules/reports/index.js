@@ -29,11 +29,11 @@ const generateReportImplAsync = async (options, { slackReqObj }) => {
     reportName,
     reportTmpName,
     reportType,
-    reportFactoryFunc,
+    reportFunc,
   } = options;
 
   try {
-    await reportFactoryFunc();
+    await reportFunc();
     const reportFilesDir = getReportFilesDir();
     const reportFilePath = path.join(reportFilesDir, reportTmpName);
 
@@ -110,7 +110,7 @@ export const generateReport = async (options) => {
       log.error(new Error(`reportKey: ${reportKey} did not match any reports. slackReqObj: ${slackReqObjString}`));
       const response = {
         response_type: 'in_channel',
-        text: 'Hmmm :thinking_face: Seems like that report is not available.',
+        text: 'Hmmm :thinking_face: Seems like that report is not available. Please try again later as I look into what went wrong.',
       };
       return response;
     }
@@ -120,12 +120,12 @@ export const generateReport = async (options) => {
       reportName: report.name,
       reportTmpName,
       reportType: report.type,
-      reportFactoryFunc() {
+      reportFunc() {
         return report.func({ reportTmpName });
       },
     };
 
-    // Fire of report generation
+    // Begin async report generation
     generateReportImplAsync(reportParams, { slackReqObj });
 
     const response = {

@@ -1,12 +1,9 @@
 import path from 'path';
 
-import { log, delay, writeToCsv, getReportFilesDir } from '../../utils';
+import { log, writeToCsv, getReportFilesDir } from '../../utils';
 
 const generateData = async ({ startDate, endDate, totalRecords }) => {
   try {
-    // Delay imitating async call
-    await delay(3000);
-
     const userActivity = [];
     for (let index = 0; index < totalRecords; index += 1) {
       userActivity.push({
