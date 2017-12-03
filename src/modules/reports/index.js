@@ -24,7 +24,7 @@ export const reportsList = Object.entries(REPORTS_CONFIG)
     return report;
   });
 
-const generateReportImpl = async (options, { slackReqObj }) => {
+const generateReportImplAsync = async (options, { slackReqObj }) => {
   const {
     reportName,
     reportTmpName,
@@ -106,6 +106,8 @@ export const generateReport = async (options) => {
     const report = REPORTS_CONFIG[reportKey];
 
     if (report === undefined) {
+      const slackReqObjString = JSON.stringify(slackReqObj);
+      log.error(new Error(`reportKey: ${reportKey} did not match any reports. slackReqObj: ${slackReqObjString}`));
       const response = {
         response_type: 'in_channel',
         text: 'Hmmm :thinking_face: Seems like that report is not available.',
@@ -113,25 +115,18 @@ export const generateReport = async (options) => {
       return response;
     }
 
-    if (reportKey === 'userActivity') {
-      const reportName = report.name;
-      const reportTmpName = `${report.namePrefix}_${Date.now()}.${report.type}`;
-      const reportType = report.type;
+    const reportTmpName = `${report.namePrefix}_${Date.now()}.${report.type}`;
+    const reportParams = {
+      reportName: report.name,
+      reportTmpName,
+      reportType: report.type,
+      reportFactoryFunc() {
+        return report.func({ reportTmpName });
+      },
+    };
 
-      const reportParams = {
-        reportName,
-        reportTmpName,
-        reportType,
-        reportFactoryFunc() {
-          return report.func({
-            reportTmpName,
-          });
-        },
-      };
-
-      // Fire of report generation
-      generateReportImpl(reportParams, { slackReqObj });
-    }
+    // Fire of report generation
+    generateReportImplAsync(reportParams, { slackReqObj });
 
     const response = {
       response_type: 'in_channel',
