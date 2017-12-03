@@ -62,7 +62,7 @@ const generateReportImpl = async (options, { slackReqObj }) => {
       FIX ME::
       Delay hack to ensure previous fs call is done processing file
     */
-    await delay(500);
+    await delay(250);
     const uploadedReport = await uploadFile({
       filePath: reportFilePath,
       fileTmpName: reportTmpName,
@@ -93,18 +93,15 @@ const generateReportImpl = async (options, { slackReqObj }) => {
       mrkdwn_in: ['text'],
     };
     return postChatMessage(message)
-      .catch((exception) => {
-        log.error(exception);
+      .catch((ex) => {
+        log.error(ex);
       });
   }
 };
 
 export const generateReport = async (options) => {
   try {
-    const {
-      slackReqObj,
-    } = options;
-
+    const { slackReqObj } = options;
     const reportKey = slackReqObj.actions[0].selected_options[0].value;
     const report = REPORTS_CONFIG[reportKey];
 
@@ -142,7 +139,6 @@ export const generateReport = async (options) => {
       mrkdwn: true,
       mrkdwn_in: ['text'],
     };
-
     return response;
   } catch (err) {
     throw err;
