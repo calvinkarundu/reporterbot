@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import config from 'config';
+import csvWriter from 'csv-write-stream';
 import morgan from 'morgan';
 import mkdirp from 'mkdirp';
 import tracer from 'tracer';
@@ -26,14 +27,21 @@ export const fileExists = async (filePath) => {
   let exists = true;
   try {
     fs.accessSync(filePath);
-  } catch (ex) {
-    if (ex.code === 'ENOENT') {
+  } catch (err) {
+    if (err.code === 'ENOENT') {
       exists = false;
     } else {
-      log.error(ex);
+      throw err;
     }
   }
   return exists;
+};
+
+export const writeToCsv = ({ headers, records, filePath }) => {
+  const writer = csvWriter({ headers });
+  writer.pipe(fs.createWriteStream(filePath));
+  records.forEach(r => writer.write(r));
+  writer.end();
 };
 
 export const getReportFilesDir = () => {

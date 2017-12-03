@@ -1,8 +1,6 @@
 import path from 'path';
-import fs from 'fs';
-import csvWriter from 'csv-write-stream';
 
-import { log, delay, getReportFilesDir } from '../../utils';
+import { log, delay, writeToCsv, getReportFilesDir } from '../../utils';
 
 const generateData = async ({ startDate, endDate, totalRecords }) => {
   try {
@@ -27,39 +25,6 @@ const generateData = async ({ startDate, endDate, totalRecords }) => {
   }
 };
 
-const writeToCsv = ({ userActivity, reportTmpName }) => {
-  const reportFilesDir = getReportFilesDir();
-  const reportFilePath = path.join(reportFilesDir, reportTmpName);
-
-  const writer = csvWriter({
-    headers: [
-      'Username',
-      'Start Date',
-      'End Date',
-      'Login Count',
-      'Items Purchased',
-      'Items Returned',
-    ],
-  });
-
-  const records = userActivity.map(record => [
-    record.username,
-    record.startDate,
-    record.endDate,
-    record.loginCount,
-    record.itemsPurchased,
-    record.itemsReturned,
-  ]);
-
-  log.info(`Compiling ${records.length} results...`);
-
-  writer.pipe(fs.createWriteStream(reportFilePath));
-  records.forEach(r => writer.write(r));
-  writer.end();
-
-  log.info(`Results compiled into ${reportFilePath}`);
-};
-
 export default async (options) => {
   try {
     const {
@@ -76,7 +41,29 @@ export default async (options) => {
     });
 
     if (userActivity.length > 0) {
-      writeToCsv({ userActivity, reportTmpName });
+      const headers = [
+        'Username',
+        'Start Date',
+        'End Date',
+        'Login Count',
+        'Items Purchased',
+        'Items Returned',
+      ];
+
+      const records = userActivity.map(record => [
+        record.username,
+        record.startDate,
+        record.endDate,
+        record.loginCount,
+        record.itemsPurchased,
+        record.itemsReturned,
+      ]);
+
+      const filesDir = getReportFilesDir();
+      const filePath = path.join(filesDir, reportTmpName);
+
+      writeToCsv({ headers, records, filePath });
+      log.info(`${records.length} records compiled into ${filePath}`);
     }
   } catch (err) {
     throw err;
