@@ -125,7 +125,8 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-config/development.json
+config/*
+!config/default.json
 
 # Ignore build folders
 dist

@@ -1,10 +1,13 @@
 import path from 'path';
+import config from 'config';
 
 import { log, delay, fileExists, getReportFilesDir } from '../../utils';
 import { postChatMessage, uploadFile } from '../slack';
 
 // Reports
 import getUserActivity from './getUserActivity';
+
+const slackConfig = config.get('slack');
 
 const REPORTS_CONFIG = {
   userActivity: {
@@ -68,6 +71,7 @@ const generateReportImplAsync = async (options, { slackReqObj }) => {
       fileTmpName: reportTmpName,
       fileName: reportName,
       fileType: reportType,
+      channels: slackConfig.reporterBot.fileUploadChannel,
     });
     const message = {
       responseUrl: slackReqObj.response_url,

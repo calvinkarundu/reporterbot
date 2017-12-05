@@ -45,9 +45,8 @@ export const writeToCsv = ({ headers, records, filePath }) => {
 };
 
 export const getReportFilesDir = () => {
-  let reportFilesDir;
   try {
-    reportFilesDir = path.join(__dirname, `../${config.get('reportFilesDir')}`);
+    const reportFilesDir = path.join(__dirname, `../${config.get('reportFilesDir')}`);
     mkdirp.sync(reportFilesDir);
     return reportFilesDir;
   } catch (err) {

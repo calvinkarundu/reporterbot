@@ -6,7 +6,7 @@ const slackConfig = config.get('slack');
 
 export const postChatMessage = message => new Promise((resolve, reject) => {
   const {
-    responseUrl = undefined,
+    responseUrl,
     channel = null,
     text = null,
     attachments = null,
@@ -33,7 +33,7 @@ export const postChatMessage = message => new Promise((resolve, reject) => {
       reject(body);
     } else if (body.ok !== true) {
       const bodyString = JSON.stringify(body);
-      reject(new Error(`Got non ok response while posting chat message body ${bodyString}`));
+      reject(new Error(`Got non ok response while posting chat message. Body -> ${bodyString}`));
     } else {
       resolve(body);
     }
@@ -46,12 +46,13 @@ export const uploadFile = options => new Promise((resolve, reject) => {
     fileTmpName,
     fileName,
     fileType,
+    channels,
   } = options;
 
   const payload = {
     token: slackConfig.reporterBot.botToken,
     file: fs.createReadStream(filePath),
-    channels: slackConfig.reporterBot.fileUploadChannel,
+    channels,
     filetype: fileType,
     filename: fileTmpName,
     title: fileName,
@@ -68,7 +69,7 @@ export const uploadFile = options => new Promise((resolve, reject) => {
       reject(body);
     } else if (body.ok !== true) {
       const bodyString = JSON.stringify(body);
-      reject(new Error(`Got non ok response while uploading file ${fileTmpName} body ${bodyString}`));
+      reject(new Error(`Got non ok response while uploading file ${fileTmpName} Body -> ${bodyString}`));
     } else {
       resolve(body);
     }
