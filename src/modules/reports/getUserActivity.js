@@ -1,6 +1,4 @@
-import path from 'path';
-
-import { log, writeToCsv, getReportFilesDir } from '../../utils';
+import { log, writeToCsv } from '../../utils';
 
 const generateData = async ({ startDate, endDate, totalRecords }) => {
   try {
@@ -28,7 +26,7 @@ export default async (options) => {
       startDate = '2017-11-25',
       endDate = '2017-11-28',
       totalRecords = 20,
-      reportTmpName = 'userActivity.csv',
+      reportFilePath,
     } = options;
 
     const userActivity = await generateData({
@@ -56,9 +54,7 @@ export default async (options) => {
         record.itemsReturned,
       ]);
 
-      const filesDir = getReportFilesDir();
-      const filePath = path.join(filesDir, reportTmpName);
-
+      const filePath = reportFilePath;
       writeToCsv({ headers, records, filePath });
       log.info(`${records.length} records compiled into ${filePath}`);
     }

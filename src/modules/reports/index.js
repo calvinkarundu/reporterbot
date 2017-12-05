@@ -29,13 +29,13 @@ const generateReportImplAsync = async (options, { slackReqObj }) => {
     reportName,
     reportTmpName,
     reportType,
+    reportFilePath,
     reportFunc,
   } = options;
 
   try {
+    // Initiate report function
     await reportFunc();
-    const reportFilesDir = getReportFilesDir();
-    const reportFilePath = path.join(reportFilesDir, reportTmpName);
 
     /*
       FIX ME::
@@ -116,12 +116,16 @@ export const generateReport = async (options) => {
     }
 
     const reportTmpName = `${report.namePrefix}_${Date.now()}.${report.type}`;
+    const reportFilesDir = getReportFilesDir();
+    const reportFilePath = path.join(reportFilesDir, reportTmpName);
+
     const reportParams = {
       reportName: report.name,
       reportTmpName,
       reportType: report.type,
+      reportFilePath,
       reportFunc() {
-        return report.func({ reportTmpName });
+        return report.func({ reportFilePath });
       },
     };
 
