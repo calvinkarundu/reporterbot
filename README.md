@@ -1,4 +1,3 @@
 # ReporterBot
 
-> A slack bot that gets reports on demand
-
+> A Slack bot for getting reports on demand
