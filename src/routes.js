@@ -20,7 +20,7 @@ router.post('/slack/command/report', async (req, res) => {
         attachment_type: 'default',
         callback_id: 'report_selection',
         actions: [{
-          name: 'reports_list',
+          name: 'reports_select_menu',
           text: 'Choose a report...',
           type: 'select',
           options: reportsList,
