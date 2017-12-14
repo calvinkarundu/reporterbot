@@ -4,7 +4,7 @@
 
 
 
-This repo was made for a Scotch.io article on [Building a Slack Bot with Modern Node.js Workflows](https://scotch.io). Check out the article for a breakdown of what's going on and the needed prerequisites.
+This repo was made for a Scotch.io article on [Building a Slack Bot with Modern Node.js Workflows](https://scotch.io/tutorials/building-a-slack-bot-with-modern-nodejs-workflows). Check out the article for a breakdown of what's going on and the needed prerequisites.
 
 
 
