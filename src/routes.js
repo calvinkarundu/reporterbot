@@ -1,7 +1,7 @@
 import express from 'express';
 
 import { log } from './utils';
-import { reportsList, generateReport } from './modules/reports';
+import { reportsList, generateReport, handleDialog } from './modules/reports';
 
 const router = new express.Router();
 
@@ -44,7 +44,13 @@ router.post('/slack/actions', async (req, res) => {
       response = await generateReport({ slackReqObj });
     }
 
-    return res.json(response);
+    if (slackReqObj.type === 'dialog_submission') {
+      response = await handleDialog({ slackReqObj });
+    }
+
+    return typeof response === 'number'
+      ? res.sendStatus(response)
+      : res.json(response);
   } catch (err) {
     log.error(err);
     return res.status(500).send('Something blew up. We\'re looking into it.');
