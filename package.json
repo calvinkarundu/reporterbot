@@ -4,7 +4,7 @@
   "description": "A slack bot that gets reports on demand",
   "main": "./dist/index.js",
   "scripts": {
-    "dev": "NODE_ENV=development babel-node src/index.js",
+    "dev": "babel-node src/index.js",
     "prod": "NODE_ENV=production node dist/index.js",
     "build": "rm -rf ./dist/ && babel src --out-dir dist/ --copy-files",
     "lint": "eslint src",
